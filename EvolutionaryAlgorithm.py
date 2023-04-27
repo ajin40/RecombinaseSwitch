@@ -57,11 +57,11 @@ def generate_parameters_markov_parent(dox, aba, index=-1):
     max_rate_aba, max_phic31 = identify_max_parameter_range(1 + 10 ** 7, 0.01, aba)
     new_params = []
     # dox_f
-    new_params.append(random.uniform(0.1, 10) * (10 ** 5))
+    new_params.append(random.uniform(0.1, 10) * (10 ** 8))
     # dox_r
     new_params.append(random.uniform(0.1, 10))
     # aba_f
-    new_params.append(random.uniform(0.1, 10) * (10 ** 5))
+    new_params.append(random.uniform(0.1, 10) * (10 ** 8))
     # aba_r
     new_params.append(random.uniform(0.01, 10))
     # k1f_wb

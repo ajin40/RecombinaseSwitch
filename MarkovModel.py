@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import integrate
+import EvolutionaryAlgorithm
 
 
 def MarkovStep(U0, U1, WB, phiC31, ks):
@@ -137,7 +138,9 @@ if __name__ == '__main__':
     ks = [2 * (10 ** 5), 2.1, 2 * (10 ** 5), 2.1, 2 * (10 ** 5), 0.08638491376740406, 2 * (10 ** 5), 200, 0.4131330151420123, 200]
     dox = 4.5 * (10 ** -6)
     aba = 150 * (10 ** -6)
+    ks = EvolutionaryAlgorithm.generate_parameters_markov_parent(dox, aba)
     final_states, transition_times = RunAllTransitions(1000, dox, aba, ks)
     PlotCumulativeTransitions(final_states, transition_times, T=96., dt=1.)
     print(FinalTransitionRate(final_states, transition_times, T=96., dt=1.))
+    print(ks)
 
