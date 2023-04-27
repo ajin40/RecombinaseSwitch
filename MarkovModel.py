@@ -35,6 +35,11 @@ def MarkovStep(U0, U1, WB, phiC31, ks):
     transition_matrix_phiC31[2, 2] = 1 - (k1r_phiC31 + k2f_phiC31 * phiC31)
     transition_matrix_phiC31[-1, -1] = 1
 
+    transition_matrix_WB[transition_matrix_WB < 0] = 0
+    transition_matrix_phiC31[transition_matrix_phiC31 < 0] = 0
+    transition_matrix_WB[transition_matrix_WB > 1] = 1
+    transition_matrix_phiC31[transition_matrix_phiC31 > 1] = 1
+
     WB_next_transition = np.dot(transition_matrix_WB.T, U0)
     phiC31_next_transition = np.dot(transition_matrix_phiC31.T, U1)
     WB_next = np.zeros(4)
@@ -102,7 +107,7 @@ def CountCumulativeTransitions(traj, transition_time, T, dt):
     for i in range(len(traj)):
         if traj[i] == 1:
             red_transition_time[int(transition_time[i][-1])] += 1
-        else:
+        elif traj[i] == 2:
             yellow_transition_time[int(transition_time[i][-1])] += 1
 
     cred = np.zeros(len(times))
@@ -129,7 +134,7 @@ def PlotCumulativeTransitions(traj, transition_times, T, dt, plot=True):
 
 if __name__ == '__main__':
     ks = [0.00001, 0.1, 0.00001, 0.0001, 0.1, 0.0001, 0.0005, 0.1, 0.005, 0.1]
-    ks = [4041517.002598585, 0.13850466491034397, 4273791.981229296, 6.23000547263538, 16.269436130751583, 0.08638491376740406, 16.87682876111512, 0.0037522532703764986, 0.6131330151420123, 0.004867073699022344]
+    ks = [2 * (10 ** 5), 2.1, 2 * (10 ** 5), 2.1, 2 * (10 ** 5), 0.08638491376740406, 2 * (10 ** 5), 200, 0.4131330151420123, 200]
     dox = 4.5 * (10 ** -6)
     aba = 150 * (10 ** -6)
     final_states, transition_times = RunAllTransitions(1000, dox, aba, ks)
