@@ -108,9 +108,9 @@ def crossover_and_mutate(num_children, parents, dox, aba, mutation_rate):
     offspring = []
 
     for _ in range(num_children):
-        parent1, parent2 = random.choices(parents, k=2)
-        parent1_parameters = parent1.GetParameters()
-        parent2_parameters = parent2.GetParameters()
+        parents = np.random.choice(parents, size=2, replace=False)
+        parent1_parameters = parents[0].GetParameters()
+        parent2_parameters = parents[1].GetParameters()
         child_parameters = [parent1_parameters[j] if random.random() < 0.5 else parent2_parameters[j] for j in
                             range(len(parent1_parameters))]
         if mutation_rate > 0:
