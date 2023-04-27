@@ -57,18 +57,18 @@ def generate_parameters_markov_parent(dox, aba, index=-1):
     max_rate_aba, max_phic31 = identify_max_parameter_range(1 + 10 ** 7, 0.01, aba)
     new_params = []
     # dox_f
-    new_params.append(random.uniform(1, 10) * (10 ** random.randint(4, 6)))
+    new_params.append(random.uniform(0.1, 10) * (10 ** 5))
     # dox_r
-    new_params.append(random.uniform(0.01, 10))
+    new_params.append(random.uniform(0.1, 10))
     # aba_f
-    new_params.append(random.uniform(1, 10) * (10 ** random.randint(4, 6)))
+    new_params.append(random.uniform(0.1, 10) * (10 ** 5))
     # aba_r
     new_params.append(random.uniform(0.01, 10))
     # k1f_wb
-    k1f_wb = random.uniform(0, max_rate_dox)
-    k2f_wb = random.uniform(0, max_rate_dox)
-    k1f_phic31 = random.uniform(0, max_rate_aba)
-    k2f_phic31 = random.uniform(0, max_rate_aba)
+    k1f_wb = random.uniform(0.1 * max_rate_dox, max_rate_dox)
+    k2f_wb = random.uniform(0.1 * max_rate_dox, max_rate_dox)
+    k1f_phic31 = random.uniform(0.1 * max_rate_aba, max_rate_aba)
+    k2f_phic31 = random.uniform(0.1 * max_rate_aba, max_rate_aba)
     new_params.append(k1f_wb)
     # k1r_wb
     new_params.append(random.uniform(0, 1-k2f_wb*max_wb))
