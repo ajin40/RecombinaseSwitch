@@ -138,16 +138,22 @@ def StepGeneration(num_cells, num_per_generation, num_processes, threshold, dox,
     return best_parents, children
 
 def RunTree(num_per_generation, num_processes, max_iterations, threshold, dox, aba, true_values, num_cells=1000, WRITE_OUT=False):
+    if WRITE_OUT:
+        a = open('output.txt', 'w+')
+        a.close()
+
     parameters = generate_initial_parameters_markov(dox, aba, num_per_generation)
     best_parent_per_generation = []
     avg_fitness_per_generation = []
     time_per_generation = []
+    fitness_best_per_generation = []
     best_simulation = None
     for i in range(max_iterations):
         start_time = time.time()
         best_parents, children_params = StepGeneration(num_cells, num_per_generation, num_processes, threshold, dox, aba, parameters, true_values)
-        best_parent_per_generation.append(f'Best Parameters: {best_parents[0].GetParameters()} \n')
-        avg_fitness_per_generation.append(f'Average Fitness: {sum(i.GetFitness() for i in best_parents) / len(best_parents)} \n')
+        best_parent_i = f'Best Parameters: {best_parents[0].GetParameters()} \n'
+        fitness_best_parent_i = f'Fitness for Best Parent: {best_parents[0].GetFitness()} \n'
+        avg_fitness_i = f'Average Fitness: {sum(i.GetFitness() for i in best_parents) / len(best_parents)} \n'
         best_simulation = best_parents[0].GetSimulation()
         if best_parents[0].GetFitness() < 0.01:
             break
@@ -155,11 +161,13 @@ def RunTree(num_per_generation, num_processes, max_iterations, threshold, dox, a
         time_taken = f'Generation {i} --- {(time.time() - start_time)}s seconds --- \n'
         print(time_taken)
         time_per_generation.append(time_taken)
-    if WRITE_OUT:
-        with open('output.txt', 'w') as out:
-            for s, best, avg in zip(time_per_generation, best_parent_per_generation, avg_fitness_per_generation):
-                out.write(f'{s}{best}{avg}')
-    return best_simulation, best_parent_per_generation, avg_fitness_per_generation
+        if WRITE_OUT:
+            with open('output.txt', 'a+') as out:
+                out.write(f'{time_taken}{best_parent_i}{fitness_best_parent_i}{avg_fitness_i}')
+        best_parent_per_generation.append(best_parent_i)
+        avg_fitness_per_generation.append(avg_fitness_i)
+        fitness_best_per_generation.append(fitness_best_parent_i)
+    return best_simulation, best_parent_per_generation, fitness_best_per_generation, avg_fitness_per_generation
 
 if __name__ == '__main__':
     num_per_generation = int(sys.argv[1])
@@ -169,12 +177,12 @@ if __name__ == '__main__':
     dox = int(sys.argv[5])
     aba = int(sys.argv[6])
     true_values = [float(sys.argv[7]), float(sys.argv[8])]
-    best_params, best_parents, avg_fitness = RunTree(num_per_generation,
-                                                     num_processes,
-                                                     max_iterations,
-                                                     threshold,
-                                                     dox,
-                                                     aba,
-                                                     true_values,
-                                                     num_cells=100,
-                                                     WRITE_OUT=True)
+    best_params, best_parents, best_parents_fitness, avg_fitness, = RunTree(num_per_generation,
+                                                                    num_processes,
+                                                                    max_iterations,
+                                                                    threshold,
+                                                                    dox,
+                                                                    aba,
+                                                                    true_values,
+                                                                    num_cells=1000,
+                                                                    WRITE_OUT=True)
