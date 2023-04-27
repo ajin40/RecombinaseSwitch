@@ -40,7 +40,6 @@ def MarkovStep(U0, U1, WB, phiC31, ks):
     transition_matrix_phiC31[transition_matrix_phiC31 < 0] = 0
     transition_matrix_WB[transition_matrix_WB > 1] = 1
     transition_matrix_phiC31[transition_matrix_phiC31 > 1] = 1
-
     WB_next_transition = np.dot(transition_matrix_WB.T, U0)
     phiC31_next_transition = np.dot(transition_matrix_phiC31.T, U1)
     WB_next = np.zeros(4)
@@ -134,13 +133,12 @@ def PlotCumulativeTransitions(traj, transition_times, T, dt, plot=True):
     pylab.show()
 
 if __name__ == '__main__':
-    ks = [0.00001, 0.1, 0.00001, 0.0001, 0.1, 0.0001, 0.0005, 0.1, 0.005, 0.1]
-    ks = [2 * (10 ** 5), 2.1, 2 * (10 ** 5), 2.1, 2 * (10 ** 5), 0.08638491376740406, 2 * (10 ** 5), 200, 0.4131330151420123, 200]
     dox = 4.5 * (10 ** -6)
     aba = 150 * (10 ** -6)
     ks = EvolutionaryAlgorithm.generate_parameters_markov_parent(dox, aba)
+    print(ks)
     final_states, transition_times = RunAllTransitions(1000, dox, aba, ks)
     PlotCumulativeTransitions(final_states, transition_times, T=96., dt=1.)
     print(FinalTransitionRate(final_states, transition_times, T=96., dt=1.))
-    print(ks)
+
 
