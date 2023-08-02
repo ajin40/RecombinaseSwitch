@@ -53,14 +53,14 @@ def generate_parameters_markov_parent(dox, aba, index=-1):
     k1r_phic31=params[8],
     k2f_phic31=params[9],
     '''
-    log = 8
+    log = 6
     doxf = random.uniform(0.1, 10) * (10 ** log)
     doxr = random.uniform(0.1, 10)
     abaf = random.uniform(0.1, 10) * (10 ** log)
-    abar = random.uniform(0.01, 10)
+    abar = random.uniform(0.1, 10)
 
-    max_rate_dox, max_wb = identify_max_parameter_range(doxf, doxr, dox)
-    max_rate_aba, max_phic31 = identify_max_parameter_range(abaf, abar, aba)
+    max_rate_dox, max_wb = identify_max_parameter_range(10 ** (log + 1), 0.1, dox)
+    max_rate_aba, max_phic31 = identify_max_parameter_range(10 ** (log + 1), 0.1, aba)
     new_params = []
     # dox_f
     new_params.append(doxf)
@@ -71,10 +71,10 @@ def generate_parameters_markov_parent(dox, aba, index=-1):
     # aba_r
     new_params.append(abar)
     # k1f_wb
-    k1f_wb = random.uniform(0, max_rate_dox)
-    k2f_wb = random.uniform(0, max_rate_dox)
-    k1f_phic31 = random.uniform(0, max_rate_aba)
-    k2f_phic31 = random.uniform(0, max_rate_aba)
+    k1f_wb = max_rate_dox #random.uniform(0.01 * max_rate_dox, max_rate_dox)
+    # k2f_wb = random.uniform(0.01 * max_rate_dox, max_rate_dox)
+    k1f_phic31 = max_rate_aba #random.uniform(0.01 * max_rate_aba, max_rate_aba)
+    # k2f_phic31 = random.uniform(0.01 * max_rate_aba, max_rate_aba)
     new_params.append(k1f_wb)
     # k1r_wb
     new_params.append(random.uniform(0, 1-k1f_wb*max_wb))
@@ -120,9 +120,8 @@ def crossover_and_mutate(num_children, parents, dox, aba, mutation_rate):
         child_parameters = [parent1_parameters[j] if random.random() < 0.5 else parent2_parameters[j] for j in
                             range(len(parent1_parameters))]
         if mutation_rate > 0:
-            for i in range(len(child_parameters)):
-                if random.random() < mutation_rate:
-                    child_parameters[i] = generate_parameters_markov_parent(dox, aba, i)
+            if random.random() < mutation_rate:
+                child_parameters = generate_parameters_markov_parent(dox, aba)
         offspring.append(child_parameters)
     return offspring
 
@@ -140,7 +139,7 @@ def StepGeneration(num_cells, num_per_generation, num_processes, threshold, dox,
     best_parents = select_parents(generation, threshold)
     for parent in best_parents:
         print(parent.GetParameters())
-    children = crossover_and_mutate(num_per_generation, best_parents, dox, aba, mutation_rate=0.2)
+    children = crossover_and_mutate(num_per_generation, best_parents, dox, aba, mutation_rate=0.1)
     return best_parents, children
 
 def RunTree(num_per_generation, num_processes, max_iterations, threshold, dox, aba, true_values, num_cells=1000, WRITE_OUT=False):

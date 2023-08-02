@@ -52,8 +52,8 @@ def MarkovStep(U0, U1, WB, phiC31, ks):
 def dudt(U, dt, dox, aba, k):
     WB, phiC31 = U
     WBkf, WBkr, phiC31kf, phiC31kr = k
-    dWB_dt = WBkf * dox ** 2 - WBkr * WB
-    dphiC31_dt = phiC31kf * aba ** 2 - phiC31kr * phiC31
+    dWB_dt = 0.01 + WBkf * dox ** 2 - WBkr * WB
+    dphiC31_dt = 0.01 + phiC31kf * aba ** 2 - phiC31kr * phiC31
     return [dWB_dt, dphiC31_dt]
 
 
@@ -70,12 +70,15 @@ def Run(dox, aba, binding_constants, tMax=96., dt=1.):
     states_WB = [U0]
     states_phiC31 = [U1]
     recombinase = integrate.odeint(dudt, [WB, phiC31], ode_times, args=(dox, aba, dox_aba_binding_constants))
+    max_recombinase = integrate.odeint(dudt, [WB, phiC31], ode_times, args=(4.51, 150, dox_aba_binding_constants))
+    WB_prot = recombinase[:, 0] / np.amax(max_recombinase[:, 0])
+    phiC31_prot = recombinase[:, 1] / np.amax(max_recombinase[:, 0])
     while t + dt < tMax:
         states_WB.append(U0)
         states_phiC31.append(U1)
         times.append(t)
         U0, U1 = MarkovStep(U0, U1, WB, phiC31, recombinase_binding_constants)
-        WB, phiC31 = recombinase[int(t), 0], recombinase[int(t), 1]
+        WB, phiC31 = WB_prot[int(t)], phiC31_prot[int(t)]
         if U0[-1] + U1[-1] > 0:
             states_WB.append(U0)
             states_phiC31.append(U1)
@@ -98,6 +101,17 @@ def RunAllTransitions(numCells, dox, aba, binding_constants, tMax=96., dt=1.):
         final_states.append(final_state)
         times_all.append(times)
     return final_states, times_all
+
+def RunAllInducers(inducers, k0, k1, k2, k3, k4, k5, k6, k7, k8, k9):
+    binding_constants = [k0, k1, k2, k3, k4, k5, k6, k7, k8, k9]
+    dox, aba = inducers
+    final_rates = np.zeros((len(dox), 2))
+    for i in range(len(dox)):
+        final_states, transition_times = RunAllTransitions(1000, dox[i], aba[i], binding_constants)
+        final_red, final_yellow = FinalTransitionRate(final_states, transition_times, T=96, dt=1.)
+        final_rates[i, :] = [final_red[-1], final_yellow[-1]]
+    return final_rates
+
 
 def CountCumulativeTransitions(traj, transition_time, T, dt):
     eps = 1.0e-06
@@ -134,9 +148,9 @@ def PlotCumulativeTransitions(traj, transition_times, T, dt, plot=True):
 
 if __name__ == '__main__':
     dox = 4.5 * (10 ** -6)
-    aba = 150 * (10 ** -6)
+    aba = 3 * (10 ** -6)
     ks = EvolutionaryAlgorithm.generate_parameters_markov_parent(dox, aba)
-    print(ks)
+    ks = [9734298.937655011, 1.5362719379096252, 9734298.937655011, 1.5362719379096252, 246.91358024691354, 0.287475612817039, 246.91358024691354, 0.22222222222222227, 0.21036577634209352, 0.22222222222222227]
     final_states, transition_times = RunAllTransitions(1000, dox, aba, ks)
     PlotCumulativeTransitions(final_states, transition_times, T=96., dt=1.)
     print(FinalTransitionRate(final_states, transition_times, T=96., dt=1.))

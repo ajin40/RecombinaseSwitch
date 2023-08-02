@@ -9,20 +9,20 @@ def RunStochasticSwitch(dox, aba, params, T=100., dt=1., plots=False, plotState=
     optionally using pylab to make plots of mRNA and protein
     amounts along the trajectory.
     """
-    sr = StochasticSwitch(dox_conc=dox, aba_conc=aba)
-    # sr = StochasticSwitch(dox_conc=dox,
-    #                       aba_conc=aba,
-    #                       dox_binding=params[0],
-    #                       dox_unbinding=params[1],
-    #                       aba_binding=params[2],
-    #                       aba_unbinding=params[3],
-    #                       TF_binding=params[4],
-    #                       TF_unbinding=params[5],
-    #                       WB_binding=params[6],
-    #                       WB_unbinding=params[7],
-    #                       phiC31_binding=params[8],
-    #                       phiC31_unbinding=params[9]
-    #                       )
+    #sr = StochasticSwitch(dox_conc=dox, aba_conc=aba)
+    sr = StochasticSwitch(dox_conc=dox,
+                          aba_conc=aba,
+                          dox_binding=params[0],
+                          dox_unbinding=params[1],
+                          aba_binding=params[2],
+                          aba_unbinding=params[3],
+                          TF_binding=params[4],
+                          TF_unbinding=params[5],
+                          WB_binding=params[6],
+                          WB_unbinding=params[7],
+                          phiC31_binding=params[8],
+                          phiC31_unbinding=params[9]
+                          )
     sts, straj = sr.Run(T, dt)
     curvetypes = ['r-', 'g-', 'b-', 'k-', 'm-']
     if plots:
@@ -89,7 +89,7 @@ def FinalTransitionRate(traj, T, dt):
     cred, cyellow, times, num_trajectories = CountCumulativeTransitions(traj, T, dt)
     return cred/num_trajectories, cyellow/num_trajectories
 
-def PlotCumulativeTransitions(traj, T, dt, plot=True):
+def PlotCumulativeTransitions(traj, T, dt):
     cred, cyellow, times, num_trajectories = CountCumulativeTransitions(traj, T, dt)
     import pylab
     pylab.figure(1)
